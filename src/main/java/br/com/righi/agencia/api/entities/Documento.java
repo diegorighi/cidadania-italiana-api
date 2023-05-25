@@ -3,6 +3,7 @@ package br.com.righi.agencia.api.entities;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -11,7 +12,7 @@ import lombok.Getter;
 @Document("documento")
 public class Documento {
 
-	@Nonnull private String cpf = null;
+	@Nonnull @Size(min = 11, max = 11) private String cpf = null;
 	
 	public Documento(String cpf) {
 		this.cpf = cpf;

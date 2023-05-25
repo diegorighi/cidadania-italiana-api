@@ -1,7 +1,5 @@
 package br.com.righi.agencia.api.forms;
 
-import java.time.LocalDate;
-
 import jakarta.annotation.Nonnull;
 import lombok.Getter;
 
@@ -11,7 +9,7 @@ public class ClienteForm {
 	@Nonnull private String primeiroNome = null;
     private String segundoNome = null;
     @Nonnull private String sobrenome = null;
-    @Nonnull private LocalDate dataNascimento = null;
+    @Nonnull private String dataNascimento = null;
     @Nonnull private String cpf = null;
     @Nonnull private String logradouro = null;
     @Nonnull private int numeroLogradouro = 0;
@@ -24,7 +22,7 @@ public class ClienteForm {
     @Nonnull private String login = null;
     @Nonnull private String senha = null;
     
-	public ClienteForm(String primeiroNome, String segundoNome, String sobrenome, LocalDate dataNascimento, String cpf,
+	public ClienteForm(String primeiroNome, String segundoNome, String sobrenome, String dataNascimento, String cpf,
 			String logradouro, int numeroLogradouro, String complemento, String cidade, String uf, String cep,
 			String email, String celular, String login, String senha) {
 		this.primeiroNome = primeiroNome;

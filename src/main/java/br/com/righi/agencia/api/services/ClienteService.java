@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +34,6 @@ public class ClienteService {
 	private String mensagemUsuarioExistente;
 	
 	
-	
 	@Transactional
 	public ClienteDTO cadastrarCliente(ClienteForm formularioCliente) {
 		Boolean sucesso = false;
@@ -42,19 +43,12 @@ public class ClienteService {
 		startTime = System.currentTimeMillis();
 		
 		log.info("###################################################");
-		log.info("[INNER SERVICE] Iniciando processamento da informacao");
-		log.info("###################################################");
+		log.info("[PRIMARY SERVICE] Iniciando processamento");
 		clienteExistente = retornaClientePorCpf(formularioCliente.getCpf());
 		
 		//Se não existir usuário na base: inclua
 		if(clienteExistente.isEmpty()) {
-			log.info("###################################################");
-			log.info("[INNER SERVICE] Iniciando persistencia em banco");
-			log.info("###################################################");
-			ClienteHandler handler = new ClienteHandler();
-			Cliente novoCliente = handler.formToEntity(formularioCliente);
-			repository.save(novoCliente);
-			sucesso = true;
+			sucesso = incluirCliente(formularioCliente);
 		}
 		
 		//Prepara mensagem de retorno
@@ -66,30 +60,41 @@ public class ClienteService {
 		endTime = System.currentTimeMillis();
 		totalTime = endTime - startTime;
 		
-		log.info("###################################################");
-		log.info(String.format("[INNER SERVICE] Tempo total de processamento: %d ms", totalTime));
+		log.info(String.format("[PRIMARY SERVICE] Tempo total de processamento: %d ms", totalTime));
 		log.info("###################################################");
 		
 		return mensagemRetorno;
 	}
+
+	@CacheEvict("clienteCache")
+	private Boolean incluirCliente(ClienteForm formularioCliente) {
+		log.info("[PRIMARY SERVICE] Limpando cache armazenado");
+		log.info("[PRIMARY SERVICE] Iniciando persistencia no MongoDB");
+		ClienteHandler handler = new ClienteHandler();
+		Cliente novoCliente = handler.formToEntity(formularioCliente);
+		repository.save(novoCliente);
+		return true;
+	}
 	
+	@Cacheable("clienteCache")
 	public Optional<Cliente> retornaClientePorCpf(String cpf) {
 		long startTime, endTime, totalTime = 0;
 		log.info("###################################################");
-		log.info("[INNER SERVICE] Iniciando pesquisa na base de dados");
-		log.info("###################################################");
+		log.info("[SECONDARY SERVICE] Iniciando pesquisa no MongoDB");
 		startTime = System.currentTimeMillis();
-		
 		
 		Optional<Cliente> retornoBanco = repository.findDocumentoCpf(cpf.replaceAll("[^0-9]", ""));
 		endTime = System.currentTimeMillis();
 		totalTime = endTime - startTime;
 		
-		log.info("###################################################");
-		log.info(String.format("[INNER SERVICE] Tempo de busca: %d ms", totalTime));
+		log.info(String.format("[SECONDARY SERVICE] Tempo total de verificação de registro: %d ms", totalTime));
 		log.info("###################################################");
 		
 		return retornoBanco;
+	}
+
+	public Page<Cliente> retornarListaClientes(Pageable pageable){
+		return repository.findAll(pageable);
 	}
 
 	private ClienteDTO criaRetorno(ClienteForm formularioCliente, Boolean sucesso) {
@@ -100,13 +105,6 @@ public class ClienteService {
 		return mensagemRetorno;
 	}
 	
-	public Page<Cliente> retornarListaClientes(Pageable pageable){
-		return repository.findAll(pageable);
-	}
-	
-	private void releaseContador(long inicio, long fim, long total) {
-		inicio = fim = total = 0;
-	}
 	
 }
 

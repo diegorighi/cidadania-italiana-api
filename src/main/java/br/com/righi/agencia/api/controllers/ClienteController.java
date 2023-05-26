@@ -34,12 +34,13 @@ public class ClienteController {
 	public ResponseEntity<ClienteDTO> cadastrar(@RequestBody ClienteForm formularioCliente) {
 		log.info("###################################################");
 		log.info("[INBOUND] Coletando dados do usuario");
-		log.info("###################################################");
 		
 		ClienteDTO retorno = service.cadastrarCliente(formularioCliente);
 		if(retorno.getSucesso()) {
 			return ResponseEntity.status(HttpStatus.OK).body(retorno);
 		}else{
+			log.info("[PRIMARY SERVICE] Usuário já existe!");
+			log.info("###################################################");
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(retorno);
 		}
 	}
@@ -48,9 +49,12 @@ public class ClienteController {
 	public ResponseEntity<Cliente> retornarCliente(@PathVariable("cpf") String cpf){
 		log.info("###################################################");
 		log.info("[INBOUND] Coletando dados do usuario");
-		log.info("###################################################");
 		Optional<Cliente> clienteOptional = service.retornaClientePorCpf(cpf);
-		if(clienteOptional.isEmpty()) return ResponseEntity.notFound().build();
+		if(clienteOptional.isEmpty()) {
+			log.info("[PRIMARY SERVICE] Usuário não foi encontrado!");
+			log.info("###################################################");
+			return ResponseEntity.notFound().build();
+		}
 		Cliente cliente = clienteOptional.get();
 	    return ResponseEntity.status(HttpStatus.OK).body(cliente);
 	}

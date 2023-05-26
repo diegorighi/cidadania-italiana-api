@@ -1,7 +1,5 @@
 package br.com.righi.agencia.api.entities;
 
-import java.time.LocalDate;
-
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import jakarta.annotation.Nonnull;

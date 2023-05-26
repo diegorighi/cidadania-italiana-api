@@ -37,8 +37,8 @@ public class ClienteController {
 		if(retorno.getSucesso()) {
 			return ResponseEntity.status(HttpStatus.OK).body(retorno);
 		}else{
-			log.info("[PRIMARY SERVICE] FALHA: Usuário já existe!");
-			log.info("###################################################");
+			log.error("[PRIMARY SERVICE] CONFLITO: Usuário já existe!");
+			log.error("###################################################");
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(retorno);
 		}
 	}

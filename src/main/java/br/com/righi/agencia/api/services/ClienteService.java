@@ -31,11 +31,15 @@ public class ClienteService {
 	@Value("${mensagem.retorno.api.usuario.existente}")
 	private String mensagemUsuarioExistente;
 	
+	
+	
 	@Transactional
 	public ClienteDTO cadastrarCliente(ClienteForm formularioCliente) {
 		Boolean sucesso = false;
 		Optional<Cliente> clienteExistente = null;
-		long startTime = System.currentTimeMillis();
+		long startTime, endTime, totalTime = 0;
+		
+		startTime = System.currentTimeMillis();
 		
 		log.info("###################################################");
 		log.info("[INNER SERVICE] Iniciando processamento da informacao");
@@ -59,8 +63,8 @@ public class ClienteService {
 			mensagemRetorno.setMensagemStatus(this.mensagemSucesso);
 		}
 		
-		long endTime = System.currentTimeMillis();
-		long totalTime = endTime - startTime;
+		endTime = System.currentTimeMillis();
+		totalTime = endTime - startTime;
 		
 		log.info("###################################################");
 		log.info(String.format("[INNER SERVICE] Tempo total de processamento: %d ms", totalTime));
@@ -70,7 +74,22 @@ public class ClienteService {
 	}
 	
 	public Optional<Cliente> retornaClientePorCpf(String cpf) {
-		return repository.findDocumentoCpf(cpf.replaceAll("[^0-9]", ""));
+		long startTime, endTime, totalTime = 0;
+		log.info("###################################################");
+		log.info("[INNER SERVICE] Iniciando pesquisa na base de dados");
+		log.info("###################################################");
+		startTime = System.currentTimeMillis();
+		
+		
+		Optional<Cliente> retornoBanco = repository.findDocumentoCpf(cpf.replaceAll("[^0-9]", ""));
+		endTime = System.currentTimeMillis();
+		totalTime = endTime - startTime;
+		
+		log.info("###################################################");
+		log.info(String.format("[INNER SERVICE] Tempo de busca: %d ms", totalTime));
+		log.info("###################################################");
+		
+		return retornoBanco;
 	}
 
 	private ClienteDTO criaRetorno(ClienteForm formularioCliente, Boolean sucesso) {
@@ -83,6 +102,10 @@ public class ClienteService {
 	
 	public Page<Cliente> retornarListaClientes(Pageable pageable){
 		return repository.findAll(pageable);
+	}
+	
+	private void releaseContador(long inicio, long fim, long total) {
+		inicio = fim = total = 0;
 	}
 	
 }

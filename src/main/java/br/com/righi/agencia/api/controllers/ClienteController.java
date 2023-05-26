@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.righi.agencia.api.dto.ClienteDTO;
@@ -39,7 +37,7 @@ public class ClienteController {
 		if(retorno.getSucesso()) {
 			return ResponseEntity.status(HttpStatus.OK).body(retorno);
 		}else{
-			log.info("[PRIMARY SERVICE] Usuário já existe!");
+			log.info("[PRIMARY SERVICE] FALHA: Usuário já existe!");
 			log.info("###################################################");
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(retorno);
 		}
@@ -60,11 +58,8 @@ public class ClienteController {
 	}
 	
 	@GetMapping
-	public Page<Cliente> retornarClientes(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size){
-		
-		Pageable pageable = PageRequest.of(page, size);
-		return service.retornarListaClientes(pageable);
+	public Page<Cliente> retornarClientes(Pageable paginacao){
+		return service.retornarListaClientes(paginacao);
 		
 	}
 }

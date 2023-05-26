@@ -30,6 +30,10 @@ public class ClienteDTO {
 		this.mensagemStatus = mensagemStatus;
 	}
 	
+	public void setSucesso(Boolean sucesso) {
+		this.sucesso = sucesso;
+	}
+	
 	
 
 }

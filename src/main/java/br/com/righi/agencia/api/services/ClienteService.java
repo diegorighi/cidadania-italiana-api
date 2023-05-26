@@ -3,7 +3,6 @@ package br.com.righi.agencia.api.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.PropertySource;
@@ -17,6 +16,7 @@ import br.com.righi.agencia.api.entities.Cliente;
 import br.com.righi.agencia.api.forms.ClienteForm;
 import br.com.righi.agencia.api.handlers.ClienteHandler;
 import br.com.righi.agencia.api.repositories.ClienteRepository;
+import br.com.righi.agencia.api.utils.ClienteServiceUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -27,11 +27,8 @@ public class ClienteService {
 	@Autowired
 	private ClienteRepository repository;
 	
-	@Value("${mensagem.retorno.api.sucesso}")
-	private String mensagemSucesso;
-	
-	@Value("${mensagem.retorno.api.usuario.existente}")
-	private String mensagemUsuarioExistente;
+	@Autowired
+	private ClienteServiceUtils utils;
 	
 	
 	@Transactional
@@ -45,16 +42,14 @@ public class ClienteService {
 		log.info("###################################################");
 		log.info("[PRIMARY SERVICE] Iniciando processamento");
 		clienteExistente = retornaClientePorCpf(formularioCliente.getCpf());
+
+		ClienteDTO mensagemRetorno = utils.criaRetorno(formularioCliente, sucesso);
 		
 		//Se não existir usuário na base: inclua
 		if(clienteExistente.isEmpty()) {
-			sucesso = incluirCliente(formularioCliente);
-		}
-		
-		//Prepara mensagem de retorno
-		ClienteDTO mensagemRetorno = criaRetorno(formularioCliente, sucesso);
-		if(sucesso) {
-			mensagemRetorno.setMensagemStatus(this.mensagemSucesso);
+			incluirCliente(formularioCliente);
+			mensagemRetorno.setMensagemStatus(utils.mensagemSucesso());
+			mensagemRetorno.setSucesso(true);
 		}
 		
 		endTime = System.currentTimeMillis();
@@ -67,13 +62,12 @@ public class ClienteService {
 	}
 
 	@CacheEvict("clienteCache")
-	private Boolean incluirCliente(ClienteForm formularioCliente) {
+	private void incluirCliente(ClienteForm formularioCliente) {
 		log.info("[PRIMARY SERVICE] Limpando cache armazenado");
 		log.info("[PRIMARY SERVICE] Iniciando persistencia no MongoDB");
 		ClienteHandler handler = new ClienteHandler();
 		Cliente novoCliente = handler.formToEntity(formularioCliente);
 		repository.save(novoCliente);
-		return true;
 	}
 	
 	@Cacheable("clienteCache")
@@ -97,13 +91,7 @@ public class ClienteService {
 		return repository.findAll(pageable);
 	}
 
-	private ClienteDTO criaRetorno(ClienteForm formularioCliente, Boolean sucesso) {
-		ClienteDTO mensagemRetorno = 
-				new ClienteDTO(this.mensagemUsuarioExistente, formularioCliente.getPrimeiroNome(), 
-						formularioCliente.getSegundoNome(), formularioCliente.getSobrenome(), 
-						formularioCliente.getEmail(), sucesso);
-		return mensagemRetorno;
-	}
+	
 	
 	
 }

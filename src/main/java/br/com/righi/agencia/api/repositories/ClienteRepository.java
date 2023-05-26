@@ -2,8 +2,6 @@ package br.com.righi.agencia.api.repositories;
 
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,7 +14,5 @@ public interface ClienteRepository extends MongoRepository<Cliente, String> {
 
 	@Query("{'documento.cpf': ?0}")
     public Optional<Cliente> findDocumentoCpf(@Param("cpf") String cpf);
-	
-	public Page<Cliente> findAll(Pageable pages);
 	
 }

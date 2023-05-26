@@ -1,9 +1,8 @@
 package br.com.righi.agencia.api.handlers;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 
 import br.com.righi.agencia.api.entities.Cliente;
 import br.com.righi.agencia.api.entities.Contato;
@@ -13,7 +12,11 @@ import br.com.righi.agencia.api.entities.Endereco;
 import br.com.righi.agencia.api.entities.Pessoa;
 import br.com.righi.agencia.api.forms.ClienteForm;
 
+@PropertySource("classpath:mensagens.properties")
 public class ClienteHandler implements EntityHandler<Cliente, ClienteForm> {
+	
+	@Value("${localdate.formato}")
+	private String formatoData;
 
 	@Override
 	public Cliente formToEntity(ClienteForm form) {
@@ -33,35 +36,53 @@ public class ClienteHandler implements EntityHandler<Cliente, ClienteForm> {
 	
 	
 	
-	
-	
-	
-	
-	
+	// NÃO UTILIZAR ESTES MÉTODOS PRIVADOS. 
+	// Utilize apenas os métodos públicos em caso de nova implementação
 
+	/**
+	 * Wrapper que retorna uma credencial já encriptada
+	 * @param form
+	 * @return Credencial.class
+	 */
 	private Credencial geraCredencial(ClienteForm form) {
 		String password = BCrypt.hashpw(form.getSenha(), BCrypt.gensalt());		
 		return new Credencial(form.getLogin(), password);
 	}
 	
+	/**
+	 * Wrapper que retorna um contato
+	 * @param form
+	 * @return Contato.class
+	 */
 	private Contato geraContato(ClienteForm form) {
 		return new Contato(form.getEmail(), form.getCelular());
 	}
 
+	/**
+	 * Wrapper que retorna um endereco
+	 * @param form
+	 * @return Endereco.class
+	 */
 	private Endereco geraEndereco(ClienteForm form) {
 		return new Endereco(form.getLogradouro(), form.getNumeroLogradouro(), form.getComplemento(), form.getCidade(), form.getUf(), form.getCep());
 	}
 
+	/**
+	 * Wrapper que retorna um documento
+	 * @param form
+	 * @return Documento.class
+	 */
 	private Documento geraDocumento(ClienteForm form) {
-		return new Documento(form.getCpf().replaceAll(".", "").replaceAll("-", ""));
+		return new Documento(form.getCpf().replaceAll("[^0-9]", ""));
 	}
 
+	/**
+	 * Wrapper que retorna uma pessoa
+	 * @param form
+	 * @return Pessoa.class
+	 */
 	private Pessoa geraPessoa(ClienteForm form) {
-		String formatoData = "dd/MM/yyyy";
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatoData);
-		LocalDate data = LocalDate.parse(form.getDataNascimento(), formatter);
-		
-		return new Pessoa(form.getPrimeiroNome(), form.getSegundoNome(), form.getSobrenome(), data);
+		return new Pessoa(form.getPrimeiroNome(), form.getSegundoNome(), form.getSobrenome(), form.getDataNascimento());
 	}
 
 

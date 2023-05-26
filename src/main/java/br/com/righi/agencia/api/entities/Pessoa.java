@@ -16,9 +16,9 @@ public class Pessoa {
 	@Nonnull private String primeiroNome = null;
     private String segundoNome = null;
     @Nonnull private String sobrenome = null;
-    @Nonnull private LocalDate dataNascimento = null;
+    @Nonnull private String dataNascimento = null;
     
-	public Pessoa(String primeiroNome, String segundoNome, String sobrenome, LocalDate dataNascimento) {
+	public Pessoa(String primeiroNome, String segundoNome, String sobrenome, String dataNascimento) {
 		this.primeiroNome = primeiroNome;
 		this.segundoNome = segundoNome;
 		this.sobrenome = sobrenome;

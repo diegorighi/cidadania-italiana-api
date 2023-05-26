@@ -18,6 +18,8 @@ public class Cliente {
 	@Nonnull private Credencial credencial;
     
     private Boolean isAtivo = false;
+    
+    public Cliente() {}
 
 	public Cliente(Pessoa pessoa, Documento documento, Endereco endereco, Contato contato, Credencial credencial) {
 		this.pessoa = pessoa;

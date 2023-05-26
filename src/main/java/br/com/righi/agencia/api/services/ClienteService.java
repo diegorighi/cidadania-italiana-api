@@ -5,14 +5,19 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.righi.agencia.api.dto.ClienteDTO;
 import br.com.righi.agencia.api.entities.Cliente;
 import br.com.righi.agencia.api.forms.ClienteForm;
 import br.com.righi.agencia.api.handlers.ClienteHandler;
 import br.com.righi.agencia.api.repositories.ClienteRepository;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @PropertySource("classpath:mensagens.properties")
 public class ClienteService {
@@ -26,14 +31,22 @@ public class ClienteService {
 	@Value("${mensagem.retorno.api.usuario.existente}")
 	private String mensagemUsuarioExistente;
 	
+	@Transactional
 	public ClienteDTO cadastrarCliente(ClienteForm formularioCliente) {
 		Boolean sucesso = false;
 		Optional<Cliente> clienteExistente = null;
+		long startTime = System.currentTimeMillis();
 		
-		clienteExistente = repository.findClienteByCpf(formularioCliente.getCpf());
+		log.info("###################################################");
+		log.info("[INNER SERVICE] Iniciando processamento da informacao");
+		log.info("###################################################");
+		clienteExistente = retornaClientePorCpf(formularioCliente.getCpf());
 		
 		//Se não existir usuário na base: inclua
 		if(clienteExistente.isEmpty()) {
+			log.info("###################################################");
+			log.info("[INNER SERVICE] Iniciando persistencia em banco");
+			log.info("###################################################");
 			ClienteHandler handler = new ClienteHandler();
 			Cliente novoCliente = handler.formToEntity(formularioCliente);
 			repository.save(novoCliente);
@@ -46,7 +59,18 @@ public class ClienteService {
 			mensagemRetorno.setMensagemStatus(this.mensagemSucesso);
 		}
 		
+		long endTime = System.currentTimeMillis();
+		long totalTime = endTime - startTime;
+		
+		log.info("###################################################");
+		log.info(String.format("[INNER SERVICE] Tempo total de processamento: %d ms", totalTime));
+		log.info("###################################################");
+		
 		return mensagemRetorno;
+	}
+	
+	public Optional<Cliente> retornaClientePorCpf(String cpf) {
+		return repository.findDocumentoCpf(cpf.replaceAll("[^0-9]", ""));
 	}
 
 	private ClienteDTO criaRetorno(ClienteForm formularioCliente, Boolean sucesso) {
@@ -55,6 +79,10 @@ public class ClienteService {
 						formularioCliente.getSegundoNome(), formularioCliente.getSobrenome(), 
 						formularioCliente.getEmail(), sucesso);
 		return mensagemRetorno;
+	}
+	
+	public Page<Cliente> retornarListaClientes(Pageable pageable){
+		return repository.findAll(pageable);
 	}
 	
 }

@@ -2,18 +2,19 @@ package br.com.righi.agencia.api.services;
 
 import java.util.Optional;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.righi.agencia.api.dto.ClienteDTO;
+import br.com.righi.agencia.api.dto.ClienteMensagemDTO;
 import br.com.righi.agencia.api.entities.Cliente;
 import br.com.righi.agencia.api.forms.ClienteForm;
+import br.com.righi.agencia.api.forms.ClienteFormSenha;
 import br.com.righi.agencia.api.handlers.ClienteHandler;
 import br.com.righi.agencia.api.repositories.ClienteRepository;
 import br.com.righi.agencia.api.utils.ClienteServiceUtils;
@@ -21,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@PropertySource("classpath:mensagens.properties")
 public class ClienteService {
 
 	@Autowired
@@ -30,35 +30,37 @@ public class ClienteService {
 	@Autowired
 	private ClienteServiceUtils utils;
 	
-	
 	@Transactional
-	public ClienteDTO cadastrarCliente(ClienteForm formularioCliente) {
-		Boolean sucesso = false;
-		Optional<Cliente> clienteExistente = null;
+	public ClienteMensagemDTO cadastrarCliente(ClienteForm formularioCliente) {
 		long startTime, endTime, totalTime = 0;
-		
+		ClienteMensagemDTO retornoAPI = new ClienteMensagemDTO();
 		startTime = System.currentTimeMillis();
 		
 		log.info("###################################################");
 		log.info("[PRIMARY SERVICE] Iniciando processamento");
-		clienteExistente = retornaClientePorCpf(formularioCliente.getCpf());
-
-		ClienteDTO mensagemRetorno = utils.criaRetorno(formularioCliente, sucesso);
 		
-		//Se não existir usuário na base: inclua
-		if(clienteExistente.isEmpty()) {
+		//Se não existir usuário na base: inclua, altere status de sucesso da inclusao para TRUE
+		if(!clienteExisteBase(formularioCliente.getCpf())) {
 			incluirCliente(formularioCliente);
-			mensagemRetorno.setMensagemStatus(utils.mensagemSucesso());
-			mensagemRetorno.setSucesso(true);
+			retornoAPI.setReturnStatus(Boolean.TRUE);
 		}
 		
+		utils.criaRetornoInserirCliente(retornoAPI);
 		endTime = System.currentTimeMillis();
 		totalTime = endTime - startTime;
 		
 		log.info(String.format("[PRIMARY SERVICE] Tempo total de processamento: %d ms", totalTime));
 		log.info("###################################################");
 		
-		return mensagemRetorno;
+		return retornoAPI;
+	}
+	
+	private Boolean clienteExisteBase(String cpf) {
+		if(repository.findDocumentoCpf(cpf.replaceAll("[^0-9]", "")).isPresent()) {
+			return Boolean.TRUE;
+		}else {
+			return Boolean.FALSE;
+		}
 	}
 
 	@CacheEvict("clienteCache")
@@ -91,6 +93,38 @@ public class ClienteService {
 		return repository.findAll(pageable);
 	}
 
+	@Transactional
+	@CacheEvict("clienteCache")
+	public ClienteMensagemDTO alterarSenhaCredencial(ClienteFormSenha formulario) {
+		long startTime, endTime, totalTime = 0;
+		ClienteMensagemDTO retornoClienteMensagem = new ClienteMensagemDTO();
+		startTime = System.currentTimeMillis();
+		
+		//Realiza busca por CPF e cria uma instância padrão
+		log.info("###################################################");
+		log.info("[PRIMARY SERVICE] Iniciando processamento");
+		
+		if(clienteExisteBase(formulario.getCpf())) {
+			Optional<Cliente> clienteExistente = retornaClientePorCpf(formulario.getCpf());
+			Cliente mongoDbCliente = clienteExistente.get();
+			
+			//Faz encriptação da senha
+			String novaSenha = BCrypt.hashpw(formulario.getSenha(), BCrypt.gensalt());
+			mongoDbCliente.getCredencial().setSenha(novaSenha);
+			repository.save(clienteExistente.get());
+			
+			retornoClienteMensagem.setReturnStatus(Boolean.TRUE);
+		}
+		
+		utils.criaRetornoAlterarSenha(retornoClienteMensagem);
+		endTime = System.currentTimeMillis();
+		totalTime = endTime - startTime;
+		log.info(String.format("[PRIMARY SERVICE] Tempo total de processamento: %d ms", totalTime));
+		log.info("###################################################");
+			
+		return retornoClienteMensagem;
+		
+	}
 	
 	
 	

@@ -1,5 +1,6 @@
 package br.com.righi.agencia.api.entities;
 
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import jakarta.annotation.Nonnull;
@@ -12,7 +13,12 @@ import lombok.Getter;
 @Document("documento")
 public class Documento {
 
-	@Nonnull @Size(min = 11, max = 11) private String cpf = null;
+	@Indexed(unique = true) 
+	@Nonnull @Size(min = 11, max = 11) 
+	private String cpf = null;
+	
+	@Deprecated
+	public Documento() {}
 	
 	public Documento(String cpf) {
 		this.cpf = cpf;

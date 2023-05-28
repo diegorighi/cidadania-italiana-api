@@ -3,6 +3,7 @@ package br.com.righi.agencia.api.entities;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
@@ -10,7 +11,13 @@ import lombok.Getter;
 public class Credencial {
 	
 	@Nonnull private String login = null;
-    @Nonnull private String senha = null;
+	
+    @Nonnull 
+    @Size(min = 8, max = 16) 
+    private String senha = null;
+    
+    @Deprecated
+    public Credencial() {}
     
 	public Credencial(String login, String senha) {
 		this.login = login;

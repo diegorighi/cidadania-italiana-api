@@ -16,6 +16,8 @@ public class ClienteDTO {
 	
 	@Nonnull private String email;
 	@Nonnull private Boolean sucesso = false;
+	
+	public ClienteDTO() {}
 
 	public ClienteDTO(String mensagemStatus, String primeiroNome, String segundoNome, String sobrenome, String email, Boolean sucesso) {
 		this.mensagemStatus = mensagemStatus;
@@ -24,6 +26,10 @@ public class ClienteDTO {
 		this.sobrenome = sobrenome;
 		this.email = email;
 		this.sucesso = sucesso;
+	}
+	
+	public ClienteDTO(String mensagemStatus) {
+		this.mensagemStatus = mensagemStatus;
 	}
 
 	public void setMensagemStatus(String mensagemStatus) {

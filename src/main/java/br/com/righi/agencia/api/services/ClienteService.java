@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.righi.agencia.api.dto.ClienteMensagemDTO;
 import br.com.righi.agencia.api.entities.Cliente;
+import br.com.righi.agencia.api.exceptions.ClienteSenhaForaPadroes;
 import br.com.righi.agencia.api.forms.ClienteForm;
 import br.com.righi.agencia.api.forms.ClienteFormSenha;
 import br.com.righi.agencia.api.handlers.ClienteHandler;
@@ -97,33 +98,45 @@ public class ClienteService {
 	@CacheEvict("clienteCache")
 	public ClienteMensagemDTO alterarSenhaCredencial(ClienteFormSenha formulario) {
 		long startTime, endTime, totalTime = 0;
-		ClienteMensagemDTO retornoClienteMensagem = new ClienteMensagemDTO();
 		startTime = System.currentTimeMillis();
+		ClienteMensagemDTO retornoClienteMensagem = new ClienteMensagemDTO();
 		
-		//Realiza busca por CPF e cria uma instância padrão
 		log.info("###################################################");
 		log.info("[PRIMARY SERVICE] Iniciando processamento");
 		
-		if(clienteExisteBase(formulario.getCpf())) {
-			Optional<Cliente> clienteExistente = retornaClientePorCpf(formulario.getCpf());
-			Cliente mongoDbCliente = clienteExistente.get();
+		try {
 			
-			//Faz encriptação da senha
-			String novaSenha = BCrypt.hashpw(formulario.getSenha(), BCrypt.gensalt());
-			mongoDbCliente.getCredencial().setSenha(novaSenha);
-			repository.save(clienteExistente.get());
+			if(formulario.getSenha().length() < 8 || formulario.getSenha().length() > 16) {
+				throw new ClienteSenhaForaPadroes(formulario.getCpf(), formulario.getSenha());
+			}
 			
-			retornoClienteMensagem.setReturnStatus(Boolean.TRUE);
+			if(clienteExisteBase(formulario.getCpf())) {
+				Optional<Cliente> clienteExistente = retornaClientePorCpf(formulario.getCpf());
+				Cliente mongoDbCliente = clienteExistente.get();
+				
+				//Faz encriptação da senha
+				String novaSenha = BCrypt.hashpw(formulario.getSenha(), BCrypt.gensalt());
+				mongoDbCliente.getCredencial().setSenha(novaSenha);
+				repository.save(clienteExistente.get());
+				
+				retornoClienteMensagem.setReturnStatus(Boolean.TRUE);
+			}
+			
+			utils.criaRetornoAlterarSenha(retornoClienteMensagem);
+			
+			endTime = System.currentTimeMillis();
+			totalTime = endTime - startTime;
+			log.info(String.format("[PRIMARY SERVICE] Tempo total de processamento: %d ms", totalTime));
+			log.info("###################################################");
+			
+		}catch(ClienteSenhaForaPadroes user) {
+			retornoClienteMensagem.setMensagemStatus(user.getMensagem());
+			retornoClienteMensagem.setReturnStatus(Boolean.FALSE);
+			log.info(String.format("[PRIMARY SERVICE] "+user.getMensagem()));
+			log.info("###################################################");
 		}
 		
-		utils.criaRetornoAlterarSenha(retornoClienteMensagem);
-		endTime = System.currentTimeMillis();
-		totalTime = endTime - startTime;
-		log.info(String.format("[PRIMARY SERVICE] Tempo total de processamento: %d ms", totalTime));
-		log.info("###################################################");
-			
 		return retornoClienteMensagem;
-		
 	}
 	
 	

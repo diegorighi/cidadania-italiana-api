@@ -20,7 +20,6 @@ import br.com.righi.agencia.api.entities.Cliente;
 import br.com.righi.agencia.api.forms.ClienteForm;
 import br.com.righi.agencia.api.forms.ClienteFormSenha;
 import br.com.righi.agencia.api.services.ClienteService;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -74,7 +73,7 @@ public class ClienteController {
 	}
 	
 	@PatchMapping("/credencial/senha/alterar")
-	public ResponseEntity<ClienteMensagemDTO> alterarSenha(@RequestBody @Valid ClienteFormSenha formularioCliente) {
+	public ResponseEntity<ClienteMensagemDTO> alterarSenha(@RequestBody ClienteFormSenha formularioCliente) {
 		log.info("###################################################");
 		log.info("[INBOUND] Coletando dados do usuario");
 		
@@ -82,7 +81,7 @@ public class ClienteController {
 		if(cliente.getReturnStatus()) {
 			return ResponseEntity.status(HttpStatus.OK).body(cliente);
 		}else{
-			log.error("[OUTBOUND] CONFLITO: Usuário não existe!");
+			log.error("[OUTBOUND] CONFLITO: Houve falha na operação!");
 			log.error("###################################################");
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(cliente);
 		}

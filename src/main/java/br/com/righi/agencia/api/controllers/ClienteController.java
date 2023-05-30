@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.righi.agencia.api.dto.ClienteMensagemDTO;
 import br.com.righi.agencia.api.entities.Cliente;
+import br.com.righi.agencia.api.forms.ClienteEnderecoFormRecord;
 import br.com.righi.agencia.api.forms.ClienteForm;
 import br.com.righi.agencia.api.forms.ClienteFormSenha;
 import br.com.righi.agencia.api.services.ClienteService;
@@ -46,9 +47,9 @@ public class ClienteController {
 	}
 	
 	/**
-	 * Retorna estrutura de Cliente para o cliente
-	 * SpringBoot Security  Permissions
-	 * ROLES: [GREEN, WHITE, GREY]
+	 * Retorna DTO para o cliente
+	 * SpringBoot Security Permissions
+	 * ROLES: [API_CLIENT, FRONTEND_CLIENT, DEBUGGER_DEV]
 	 * @param cpf
 	 * @return
 	 */
@@ -66,6 +67,13 @@ public class ClienteController {
 	    return ResponseEntity.status(HttpStatus.OK).body(cliente);
 	}
 	
+	/**
+	 * Retorna DTO para o cliente
+	 * SpringBoot Security Permissions
+	 * ROLES: [API_CLIENT, FRONTEND_CLIENT, DEBUGGER_DEV]
+	 * @param cpf
+	 * @return
+	 */
 	@GetMapping
 	public Page<Cliente> retornarClientes(Pageable paginacao){
 		return service.retornarListaClientes(paginacao);
@@ -88,8 +96,18 @@ public class ClienteController {
 	}
 	
 	@PatchMapping("/contato/endereco/alterar")
-	public void alterarEndereco() {
+	public ResponseEntity<ClienteMensagemDTO> alterarEndereco(@RequestBody ClienteEnderecoFormRecord enderecoForm) {
+		log.info("###################################################");
+		log.info("[INBOUND] Coletando dados do usuario");
 		
+		ClienteMensagemDTO cliente = service.alterarEnderecoCliente(enderecoForm);
+		if(cliente.getReturnStatus()) {
+			return ResponseEntity.status(HttpStatus.OK).body(cliente);
+		}else {
+			log.error("[OUTBOUND] CONFLITO: Houve falha na operação!");
+			log.error("###################################################");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(cliente);
+		}
 	}
 	
 	@PatchMapping("/contato/email/alterar")

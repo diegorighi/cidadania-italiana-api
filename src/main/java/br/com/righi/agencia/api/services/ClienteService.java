@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.righi.agencia.api.dto.ClienteMensagemDTO;
 import br.com.righi.agencia.api.entities.Cliente;
 import br.com.righi.agencia.api.exceptions.ClienteSenhaForaPadroes;
+import br.com.righi.agencia.api.forms.ClienteEnderecoFormRecord;
 import br.com.righi.agencia.api.forms.ClienteForm;
 import br.com.righi.agencia.api.forms.ClienteFormSenha;
 import br.com.righi.agencia.api.handlers.ClienteHandler;
@@ -117,7 +118,7 @@ public class ClienteService {
 				//Faz encriptação da senha
 				String novaSenha = BCrypt.hashpw(formulario.getSenha(), BCrypt.gensalt());
 				mongoDbCliente.getCredencial().setSenha(novaSenha);
-				repository.save(clienteExistente.get());
+				repository.save(mongoDbCliente);
 				
 				retornoClienteMensagem.setReturnStatus(Boolean.TRUE);
 			}
@@ -139,7 +140,31 @@ public class ClienteService {
 		return retornoClienteMensagem;
 	}
 	
-	
+	public ClienteMensagemDTO alterarEnderecoCliente(ClienteEnderecoFormRecord enderecoForm) {
+		long startTime, endTime, totalTime = 0;
+		startTime = System.currentTimeMillis();
+		ClienteMensagemDTO retornoClienteMensagem = new ClienteMensagemDTO();
+		log.info("###################################################");
+		log.info("[PRIMARY SERVICE] Iniciando processamento");
+		
+		
+		if(clienteExisteBase(enderecoForm.cpf())) {
+			Optional<Cliente> clienteExistente = retornaClientePorCpf(enderecoForm.cpf());
+			Cliente mongoDbCliente = clienteExistente.get();
+			
+			utils.bindEndereco(mongoDbCliente, enderecoForm);
+			repository.save(mongoDbCliente);
+			retornoClienteMensagem.setReturnStatus(Boolean.TRUE);
+		}
+			utils.criaRetornoAlteraEndereco(retornoClienteMensagem);
+			
+			endTime = System.currentTimeMillis();
+			totalTime = endTime - startTime;
+			log.info(String.format("[PRIMARY SERVICE] Tempo total de processamento: %d ms", totalTime));
+			log.info("###################################################");
+		
+		return retornoClienteMensagem;
+	}
 	
 }
 

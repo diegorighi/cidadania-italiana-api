@@ -17,10 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.righi.agencia.api.dto.ClienteMensagemDTO;
 import br.com.righi.agencia.api.entities.Cliente;
+import br.com.righi.agencia.api.forms.ClienteCelularFormRecord;
+import br.com.righi.agencia.api.forms.ClienteEmailFormRecord;
 import br.com.righi.agencia.api.forms.ClienteEnderecoFormRecord;
-import br.com.righi.agencia.api.forms.ClienteForm;
-import br.com.righi.agencia.api.forms.ClienteFormSenha;
+import br.com.righi.agencia.api.forms.ClienteFormRecord;
+import br.com.righi.agencia.api.forms.ClienteSenhaFormRecord;
 import br.com.righi.agencia.api.services.ClienteService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -32,7 +35,7 @@ public class ClienteController {
 	private ClienteService service;
 	
 	@PostMapping
-	public ResponseEntity<ClienteMensagemDTO> cadastrar(@RequestBody ClienteForm formularioCliente) {
+	public ResponseEntity<ClienteMensagemDTO> cadastrar(@RequestBody @Valid ClienteFormRecord formularioCliente) {
 		log.info("###################################################");
 		log.info("[INBOUND] Coletando dados do usuario");
 		
@@ -81,7 +84,7 @@ public class ClienteController {
 	}
 	
 	@PatchMapping("/credencial/senha/alterar")
-	public ResponseEntity<ClienteMensagemDTO> alterarSenha(@RequestBody ClienteFormSenha formularioCliente) {
+	public ResponseEntity<ClienteMensagemDTO> alterarSenha(@RequestBody ClienteSenhaFormRecord formularioCliente) {
 		log.info("###################################################");
 		log.info("[INBOUND] Coletando dados do usuario");
 		
@@ -96,7 +99,7 @@ public class ClienteController {
 	}
 	
 	@PatchMapping("/contato/endereco/alterar")
-	public ResponseEntity<ClienteMensagemDTO> alterarEndereco(@RequestBody ClienteEnderecoFormRecord enderecoForm) {
+	public ResponseEntity<ClienteMensagemDTO> alterarEndereco(@RequestBody @Valid ClienteEnderecoFormRecord enderecoForm) {
 		log.info("###################################################");
 		log.info("[INBOUND] Coletando dados do usuario");
 		
@@ -111,12 +114,32 @@ public class ClienteController {
 	}
 	
 	@PatchMapping("/contato/email/alterar")
-	public void alterarEmail() {
+	public ResponseEntity<ClienteMensagemDTO> alterarEmail(@RequestBody ClienteEmailFormRecord emailForm) {
+		log.info("###################################################");
+		log.info("[INBOUND] Coletando dados do usuario");
 		
+		ClienteMensagemDTO cliente = service.alterarEmailCliente(emailForm);
+		if(cliente.getReturnStatus()) {
+			return ResponseEntity.status(HttpStatus.OK).body(cliente);
+		}else {
+			log.error("[OUTBOUND] CONFLITO: Houve falha na operação!");
+			log.error("###################################################");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(cliente);
+		}
 	}
 	
 	@PatchMapping("/contato/celular/alterar")
-	public void alterarCelular() {
+	public ResponseEntity<ClienteMensagemDTO> alterarCelular(@RequestBody @Valid ClienteCelularFormRecord celularForm) {
+		log.info("###################################################");
+		log.info("[INBOUND] Coletando dados do usuario");
 		
+		ClienteMensagemDTO cliente = service.alterarCelularCliente(celularForm);
+		if(cliente.getReturnStatus()) {
+			return ResponseEntity.status(HttpStatus.OK).body(cliente);
+		}else {
+			log.error("[OUTBOUND] CONFLITO: Houve falha na operação!");
+			log.error("###################################################");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(cliente);
+		}
 	}
 }

@@ -10,16 +10,16 @@ import br.com.righi.agencia.api.entities.Credencial;
 import br.com.righi.agencia.api.entities.Documento;
 import br.com.righi.agencia.api.entities.Endereco;
 import br.com.righi.agencia.api.entities.Pessoa;
-import br.com.righi.agencia.api.forms.ClienteForm;
+import br.com.righi.agencia.api.forms.ClienteFormRecord;
 
 @PropertySource("classpath:mensagens.properties")
-public class ClienteHandler implements EntityHandler<Cliente, ClienteForm> {
+public class ClienteHandler implements EntityHandler<Cliente, ClienteFormRecord> {
 	
 	@Value("${localdate.formato}")
 	private String formatoData;
 
 	@Override
-	public Cliente formToEntity(ClienteForm form) {
+	public Cliente formToEntity(ClienteFormRecord form) {
 		
 		Pessoa novaPessoa = geraPessoa(form);
 		Documento novoDocumento = geraDocumento(form);
@@ -44,9 +44,9 @@ public class ClienteHandler implements EntityHandler<Cliente, ClienteForm> {
 	 * @param form
 	 * @return Credencial.class
 	 */
-	private Credencial geraCredencial(ClienteForm form) {
-		String password = BCrypt.hashpw(form.getSenha(), BCrypt.gensalt());		
-		return new Credencial(form.getLogin(), password);
+	private Credencial geraCredencial(ClienteFormRecord form) {
+		String password = BCrypt.hashpw(form.senha(), BCrypt.gensalt());		
+		return new Credencial(form.login(), password);
 	}
 	
 	/**
@@ -54,8 +54,8 @@ public class ClienteHandler implements EntityHandler<Cliente, ClienteForm> {
 	 * @param form
 	 * @return Contato.class
 	 */
-	private Contato geraContato(ClienteForm form) {
-		return new Contato(form.getEmail(), form.getCelular());
+	private Contato geraContato(ClienteFormRecord form) {
+		return new Contato(form.email(), form.celular());
 	}
 
 	/**
@@ -63,8 +63,8 @@ public class ClienteHandler implements EntityHandler<Cliente, ClienteForm> {
 	 * @param form
 	 * @return Endereco.class
 	 */
-	private Endereco geraEndereco(ClienteForm form) {
-		return new Endereco(form.getLogradouro(), form.getNumeroLogradouro(), form.getComplemento(), form.getCidade(), form.getUf(), form.getCep());
+	private Endereco geraEndereco(ClienteFormRecord form) {
+		return new Endereco(form.logradouro(), form.numeroLogradouro(), form.complemento(), form.cidade(), form.uf(), form.cep());
 	}
 
 	/**
@@ -72,8 +72,8 @@ public class ClienteHandler implements EntityHandler<Cliente, ClienteForm> {
 	 * @param form
 	 * @return Documento.class
 	 */
-	private Documento geraDocumento(ClienteForm form) {
-		return new Documento(form.getCpf().replaceAll("[^0-9]", ""));
+	private Documento geraDocumento(ClienteFormRecord form) {
+		return new Documento(form.cpf().replaceAll("[^0-9]", ""));
 	}
 
 	/**
@@ -81,8 +81,8 @@ public class ClienteHandler implements EntityHandler<Cliente, ClienteForm> {
 	 * @param form
 	 * @return Pessoa.class
 	 */
-	private Pessoa geraPessoa(ClienteForm form) {
-		return new Pessoa(form.getPrimeiroNome(), form.getSegundoNome(), form.getSobrenome(), form.getDataNascimento());
+	private Pessoa geraPessoa(ClienteFormRecord form) {
+		return new Pessoa(form.primeiroNome(), form.segundoNome(), form.sobrenome(), form.dataNascimento());
 	}
 
 

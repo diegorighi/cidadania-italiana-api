@@ -9,12 +9,12 @@ import br.com.righi.agencia.api.dto.RetornoMensagem;
 
 @Component
 @PropertySource("classpath:mensagens.properties")
-public class AlteraEnderecoMensagem implements RetornoMensagem {
+public class AlterarEnderecoMensagem implements RetornoMensagem {
 
-	@Value("${mensagem.cliente.endereco.alterada.ok}")
+	@Value("${mensagem.cliente.endereco.alterado.ok}")
 	private String mensagemAlterarEnderecoOK;
 	
-	@Value("${mensagem.cliente.endereco.alterada.nok}")
+	@Value("${mensagem.cliente.endereco.alterado.nok}")
 	private String mensagemAlterarEnderecoNOK;
 	
 	@Override

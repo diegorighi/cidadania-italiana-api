@@ -141,6 +141,8 @@ public class ClienteService {
 		return retornoClienteMensagem;
 	}
 	
+	@Transactional
+	@CacheEvict("clienteCache")
 	public ClienteMensagemDTO alterarEnderecoCliente(ClienteEnderecoFormRecord enderecoForm) {
 		long startTime, endTime, totalTime = 0;
 		startTime = System.currentTimeMillis();
@@ -167,6 +169,8 @@ public class ClienteService {
 		return retornoClienteMensagem;
 	}
 	
+	@Transactional
+	@CacheEvict("clienteCache")
 	public ClienteMensagemDTO alterarEmailCliente(ClienteEmailFormRecord emailForm) {
 		long startTime, endTime, totalTime = 0;
 		startTime = System.currentTimeMillis();
@@ -202,6 +206,8 @@ public class ClienteService {
 		return retornoClienteMensagem;
 	}
 	
+	@Transactional
+	@CacheEvict("clienteCache")
 	public ClienteMensagemDTO alterarCelularCliente(ClienteCelularFormRecord celularForm) {
 		long startTime, endTime, totalTime = 0;
 		startTime = System.currentTimeMillis();

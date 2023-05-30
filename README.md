@@ -20,7 +20,7 @@ Esta é uma API RESTful para consultar informações sobre a cidadania italiana.
 ## Configuração
 
 1. Clone este repositório em sua máquina local.
-2. Configure o banco de dados PostgreSQL e atualize as configurações de conexão no arquivo `application.properties`.
+2. Configure o banco de dados MongoDB e atualize as configurações de conexão no arquivo `application.properties`.
 3. Execute o comando `mvn install` para baixar as dependências do projeto.
 4. Execute o comando `mvn spring-boot:run` para iniciar a aplicação.
 

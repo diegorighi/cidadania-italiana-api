@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 
-@Profile("dev")
 @Configuration
+@Profile("dev")
 public class DEVMongoDBConfiguration {
 	
 	@Value("${MONGODB_URI}")
@@ -18,5 +18,7 @@ public class DEVMongoDBConfiguration {
     public MongoTemplate mongoTemplate() {
         return new MongoTemplate(new SimpleMongoClientDatabaseFactory(mongoDbConnectionUri));
     }
+	
+	
 	
 }

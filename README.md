@@ -10,6 +10,15 @@ Esta é uma API RESTful para consultar informações sobre a cidadania italiana.
 - Perguntas frequentes e respostas sobre a cidadania italiana
 - Consulta de fluxo de início e fim de cada processo
 
+## Running on Docker
+- Entre no diretório raiz do projeto com powershell ou terminal
+- Realize o comando `mvn clean install -U`
+- Realize o comando `mvn package`
+- Realize o comando `docker build -t seuDir/tagNomeDaImagemDocker:1.0.0`
+- Verifique através do comando `docker ps` o ID da imagem
+- Realize o comando `docker run -p 8080:8080 ID`
+- Poderá verificar na URI `http://localhost:8080/api-cidadania/cliente?size=3&page=0&sort=pessoa,primeiroNome,cpf,desc` se funcionou
+
 ## Pré-requisitos
 
 - Java 17 ou superior

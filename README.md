@@ -36,6 +36,8 @@ A API oferece os seguintes endpoints principais:
 - `GET /api-cidadania/cliente/{cpf}`: Retorna um modelo de cliente de acordo com o CPF informado do tipo String
 - `POST /api-cidadania/cliente`: Insere novos clientes 
 - `SpringDoc`: http://localhost:8080/api-cidadania/swagger-ui.html
+- `Actuator`: http://localhost:8080/api-cidadania/actuator
+- `Prometheus`: http://localhost:8080/api-cidadania/actuator/prometheus
 Consulte a documentação da API para obter mais detalhes sobre os parâmetros de consulta e os formatos de resposta.
 
 ## Contribuição

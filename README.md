@@ -14,7 +14,7 @@ Esta é uma API RESTful para consultar informações sobre a cidadania italiana.
 - Realize o comando `mvn package`
 - Realize o comando `docker build -t seuDir/tagNomeDaImagemDocker:1.0.0`
 - Copie o ID da imagem através do comando `docker ps` 
-- Realize o comando `docker run -p 8080:8080 ID` OBS: No lugar o ID, cole o valor encontrado na instrução anterior
+- Realize o comando `docker run ID` OBS: No lugar o ID, cole o valor encontrado na instrução anterior. No Dockerfile já há a instsrução de EXPOSE 8080, logo não é necessário o comando `-p 8080:8080` após a instrução `docker`
 - Poderá verificar na URI `http://localhost:8080/api-cidadania/cliente?size=3&page=0&sort=pessoa,primeiroNome,cpf,asc` se funcionou
 
 ## Running on Localhost 

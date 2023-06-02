@@ -34,6 +34,9 @@ public class ClienteService {
 	@Autowired
 	private ClienteServiceUtils utils;
 	
+	@Autowired
+	private ClienteHandler handler;
+	
 	@Transactional
 	public ClienteMensagemDTO cadastrarCliente(ClienteFormRecord formularioCliente) {
 		long startTime, endTime, totalTime = 0;
@@ -44,7 +47,7 @@ public class ClienteService {
 		log.info("[PRIMARY SERVICE] Iniciando processamento");
 		
 		//Se não existir usuário na base: inclua, altere status de sucesso da inclusao para TRUE
-		if(!clienteExisteBase(formularioCliente.cpf())) {
+		if(!clienteExisteBase(formularioCliente.documentoCpf())) {
 			incluirCliente(formularioCliente);
 			retornoAPI.setReturnStatus(Boolean.TRUE);
 		}
@@ -71,7 +74,6 @@ public class ClienteService {
 	private void incluirCliente(ClienteFormRecord formularioCliente) {
 		log.info("[PRIMARY SERVICE] Limpando cache armazenado");
 		log.info("[PRIMARY SERVICE] Iniciando persistencia no MongoDB");
-		ClienteHandler handler = new ClienteHandler();
 		Cliente novoCliente = handler.formToEntity(formularioCliente);
 		repository.save(novoCliente);
 	}

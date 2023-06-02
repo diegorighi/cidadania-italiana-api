@@ -16,9 +16,6 @@ public class Pessoa {
     @Nonnull private String sobrenome = null;
     @Nonnull private String dataNascimento = null;
     
-    @Deprecated
-    public Pessoa() {}
-    
 	public Pessoa(String primeiroNome, String segundoNome, String sobrenome, String dataNascimento) {
 		this.primeiroNome = primeiroNome;
 		this.segundoNome = segundoNome;

@@ -20,9 +20,6 @@ public class Endereco {
     @Nonnull private String uf = null;
     @Nonnull private String cep = null;
     
-    @Deprecated
-    public Endereco() {}
-    
 	public Endereco(String logradouro, int numeroLogradouro, String complemento, String cidade, String uf, String cep) {
 		this.logradouro = logradouro;
 		this.numeroLogradouro = numeroLogradouro;

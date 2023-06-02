@@ -8,8 +8,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import jakarta.annotation.Nonnull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @EqualsAndHashCode
 @Document("cliente")
 public class Cliente implements Serializable {
@@ -30,7 +32,8 @@ public class Cliente implements Serializable {
     @Deprecated
     public Cliente() {}
 
-	public Cliente(Pessoa pessoa, Documento documento, Endereco endereco, Contato contato, Credencial credencial) {
+	public Cliente(Pessoa pessoa, Documento documento, Endereco endereco, 
+			Contato contato, Credencial credencial) {
 		this.pessoa = pessoa;
 		this.documento = documento;
 		this.endereco = endereco;

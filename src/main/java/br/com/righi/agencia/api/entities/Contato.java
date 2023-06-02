@@ -16,9 +16,6 @@ public class Contato {
 	@Nonnull private String email = null;
     @Nonnull private String celular = null;
     
-    @Deprecated
-    public Contato() {}
-    
 	public Contato(String email, String celular) {
 		this.email = email;
 		this.celular = celular;

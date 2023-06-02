@@ -17,9 +17,6 @@ public class Documento {
 	@Nonnull @Size(min = 11, max = 11) 
 	private String cpf = null;
 	
-	@Deprecated
-	public Documento() {}
-	
 	public Documento(String cpf) {
 		this.cpf = cpf;
 	}

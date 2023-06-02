@@ -38,6 +38,7 @@ A API oferece os seguintes endpoints principais:
 - `SpringDoc`: http://localhost:8080/api-cidadania/swagger-ui.html
 - `Actuator`: http://localhost:8080/api-cidadania/actuator
 - `Prometheus`: http://localhost:8080/api-cidadania/actuator/prometheus
+
 Consulte a documentação da API para obter mais detalhes sobre os parâmetros de consulta e os formatos de resposta.
 
 ## Contribuição

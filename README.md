@@ -1,5 +1,6 @@
 # Cidadania Italiana API
 Esta é uma API RESTful para consultar informações sobre a cidadania italiana. Ela fornece endpoints para obter dados sobre documentos necessários, processos, requisitos e outras informações relevantes relacionadas à cidadania italiana para a Startup.
+Para métodos create e listar não foram adicionados ROLES aos usuários por questões de comodidade nos testes com SpringSecurity. Porém ao realizar o deploy em PRODUÇÃO deve-se especificar as roles ao JWT fornecido deixando apenas exposto o `/login` e talvez `/actuator` com SpringDoc.
 
 ## Funcionalidades
 - Consulta de documentos necessários para a cidadania italiana

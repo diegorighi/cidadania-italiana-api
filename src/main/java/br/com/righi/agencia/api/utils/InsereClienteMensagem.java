@@ -9,7 +9,7 @@ import br.com.righi.agencia.api.dto.RetornoMensagem;
 
 @Component
 @PropertySource("classpath:mensagens.properties")
-public class InsereClienteMensagem implements RetornoMensagem {
+public class InsereClienteMensagem implements RetornoMensagem<ClienteMensagemDTO> {
 	
 	@Value("${mensagem.cliente.inserir.ok}")
 	private String mensagemInsertOK;

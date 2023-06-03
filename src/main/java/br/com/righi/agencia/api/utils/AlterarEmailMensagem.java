@@ -9,7 +9,7 @@ import br.com.righi.agencia.api.dto.RetornoMensagem;
 
 @Component
 @PropertySource("classpath:mensagens.properties")
-public class AlterarEmailMensagem implements RetornoMensagem {
+public class AlterarEmailMensagem implements RetornoMensagem<ClienteMensagemDTO> {
 
 	@Value("${mensagem.cliente.contato.email.alterado.ok}")
 	private String mensagemAlterarEmailOK;

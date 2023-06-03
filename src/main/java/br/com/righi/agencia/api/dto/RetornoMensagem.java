@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @PropertySource("classpath:mensagens.properties")
-public interface RetornoMensagem {
+public interface RetornoMensagem<T> {
 
-	public void build(ClienteMensagemDTO retorno);
+	public void build(T retorno);
 
 }

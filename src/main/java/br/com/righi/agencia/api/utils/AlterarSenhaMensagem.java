@@ -9,7 +9,7 @@ import br.com.righi.agencia.api.dto.RetornoMensagem;
 
 @Component
 @PropertySource("classpath:mensagens.properties")
-public class AlterarSenhaMensagem implements RetornoMensagem {
+public class AlterarSenhaMensagem implements RetornoMensagem<ClienteMensagemDTO> {
 
 	@Value("${mensagem.cliente.credencial.senha.alterada.ok}")
 	private String mensagemAlterarSenhaOK;

@@ -1,5 +1,6 @@
 package br.com.righi.agencia.api.entities;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import jakarta.annotation.Nonnull;
@@ -9,6 +10,9 @@ import lombok.Getter;
 @Getter
 @Document("credencial")
 public class Credencial {
+	
+	@Id
+	private String id;
 	
 	@Nonnull private String login = null;
 	
